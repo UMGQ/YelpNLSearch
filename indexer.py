@@ -77,6 +77,7 @@ class Indexer(object):
 
         for key, business in self.data.items():
             doc = Document()
+            text = ""
             doc.add(Field("id", business["business_id"], Field.Store.YES, Field.Index.ANALYZED))
             doc.add(Field("name", business["name"], Field.Store.YES, Field.Index.ANALYZED))
             doc.add(Field("address", business["full_address"], Field.Store.YES, Field.Index.ANALYZED))
@@ -91,8 +92,14 @@ class Indexer(object):
             for tip in business["tip"]:
                 tip_text += tip["text"]
 
-            doc.add(Field("review", review_text, Field.Store.YES, Field.Index.ANALYZED))
-            doc.add(Field("tip", tip_text, Field.Store.YES, Field.Index.ANALYZED))
+            text += business["name"]
+            text += business["full_address"]
+            text += cat_text
+            text += review_text
+            text += tip_text
+            # doc.add(Field("review", review_text, Field.Store.YES, Field.Index.ANALYZED))
+            # doc.add(Field("tip", tip_text, Field.Store.YES, Field.Index.ANALYZED))
+            doc.add(Field("text", text, Field.Store.YES, Field.Index.ANALYZED))
 
             writer.addDocument(doc)
 
