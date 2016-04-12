@@ -22,14 +22,12 @@ class Indexer(object):
     def preprocess(self):
         print "PREPROCESSING..."
         
-        """
         for file in os.listdir("."):
             if file == self.destination:
                 print "Loading from " + self.destination
                 with open(self.destination, "r") as f:
                     self.data = json.load(f)
                 return
-        """
 
         # preprocess business.json
         print "Preprocessing business.json"
@@ -65,12 +63,10 @@ class Indexer(object):
                     print "tip not related!"
 
         # dump to json
-        """
         if self.destination:
             print "Writing to " + self.destination
             with open(self.destination, "w") as f:
                 json.dump(self.data, f)
-        """
 
     def index(self):
         print "INDEXING..."
@@ -81,6 +77,7 @@ class Indexer(object):
 
         for key, business in self.data.items():
             doc = Document()
+            doc.add(Field("id", business["business_id"], Field.Store.YES, Field.Index.ANALYZED))
             doc.add(Field("name", business["name"], Field.Store.YES, Field.Index.ANALYZED))
             doc.add(Field("address", business["full_address"], Field.Store.YES, Field.Index.ANALYZED))
             cat_text = "\n".join(business["categories"])
