@@ -97,6 +97,9 @@ def parse_location(original_setence) :
 	if 'las vegas' in original_setence :
 		filters['city'] = 'Las Vegas'
 		original_setence = original_setence.replace('las vegas', "")
+	if 'montreal' in original_setence :
+		filters['city'] = 'Montreal'
+		original_setence = original_setence.replace('montreal', "")
 					
 
 	itemlist = original_setence.lower().split(' ')
@@ -259,4 +262,4 @@ def query() :
 	#print filters
 	return original_setence, filters
 
-query()
+#query()
