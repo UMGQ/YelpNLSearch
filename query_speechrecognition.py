@@ -93,6 +93,10 @@ def parse_location(original_setence) :
 					#print original_setence.replace(itemsrcd, "")
 					original_setence = original_setence.replace(itemsrcd, "")
 					#print original_setence
+
+	if 'las vegas' in original_setence :
+		filters['city'] = 'Las Vegas'
+		original_setence = original_setence.replace('las vegas', "")
 					
 
 	itemlist = original_setence.lower().split(' ')
