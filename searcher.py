@@ -57,13 +57,20 @@ class Searcher(object):
                         valid = False
                         break
                 elif key == "Parking":
-                    p = False
-                    for v in self.data[id]["attributes"][key].values():
-                        if v:
-                            p = True
-                            break
-                    if not p:
+                    valid = self.check_parking(id)
+                    if not valid:
+                        break
+                elif key == "hours":
+                    valid = self.check_hours(id, value)
+                    if not valid:
+                        break
+                elif key == "city" or key == "state":
+                    if self.data[id][key] != value:
                         valid = False
+                        break
+                elif key == "distance":
+                    valid = self.check_distance(id, value)
+                    if not valid:
                         break
                 else:
                     if key not in self.data[id]["attributes"] or not self.data[id]["attributes"][key]:
@@ -74,3 +81,39 @@ class Searcher(object):
                 results.append(item)
 
         return results
+
+    def check_distance(self, id, value):
+        p1 = (self.data[id]["latitude"], self.data[id]["longitude"])
+        p2 = value[1]
+        
+        if value[0] <= distance(p1, p2):
+            return True
+        else:
+            return False
+
+    def check_parking(self, id):
+        parking = False
+        for value in self.data[id]["attributes"]["Parking"].values():
+            if value:
+                parking = True
+                break
+
+        return parking
+
+    def check_hours(self, id, time):
+        open_time = self.data[id]["hours"][time[0]]["open"]
+        close_time = self.data[id]["hours"][time[0]]["close"]
+
+        open_time = self.hour_to_number(open_time)
+        close_time = self.hour_to_number(close_time)
+        query_time = self.hour_to_number(time[1])
+
+        if query_time >= open_time and query_time <= close_time:
+            return True
+        else:
+            return False
+
+    def hour_to_number(self, hours):
+        l = hours.split(":")
+        return float(l[0]) + float(l[1])/60
+
