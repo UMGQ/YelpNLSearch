@@ -32,7 +32,7 @@ class Searcher(object):
     def searching(self, query):
         print "Searching:", query
         query = QueryParser(Version.LUCENE_4_10_1, "text", self.analyzer).parse(query)
-        MAX = 5
+        MAX = 50
         hits = self.searcher.search(query, MAX)
         results = []
         for hit in hits.scoreDocs:
@@ -41,9 +41,11 @@ class Searcher(object):
 
         results = sorted(results, key=lambda x : x[2], reverse=True)
         # return map(lambda x : x[0], results)
+        print "Search hits:", len(results)
         return results
 
     def filtering(self, search_results, filters):
+        print "Filtering..."
         results = []
         for item in search_results:
             id = item[0]
@@ -55,10 +57,12 @@ class Searcher(object):
                 if key == "Price Range":
                     if self.data[id]["attributes"][key] != value:
                         valid = False
+                        print id, self.data[id]["name"], "filtered by price range, request:", value, "actual:", self.data[id]["attributes"][key]
                         break
                 elif key == "Parking":
                     valid = self.check_parking(id)
                     if not valid:
+                        print id, self.data[id]["name"], "filtered by parking"
                         break
                 elif key == "hours":
                     valid = self.check_hours(id, value)
@@ -67,18 +71,23 @@ class Searcher(object):
                 elif key == "city" or key == "state":
                     if self.data[id][key] != value:
                         valid = False
+                        print id, self.data[id]["name"], "filtered by city/state"
                         break
                 elif key == "distance":
                     valid = self.check_distance(id, value)
                     if not valid:
+                        print id, self.data[id]["name"], "filtered by distance"
                         break
                 else:
                     if key not in self.data[id]["attributes"] or not self.data[id]["attributes"][key]:
                         valid = False
+                        print id, self.data[id]["name"], "filtered by others"
                         break
 
             if valid:
                 results.append(item)
+
+        print "After filtering:", len(results)
 
         return results
 
@@ -101,16 +110,22 @@ class Searcher(object):
         return parking
 
     def check_hours(self, id, time):
-        open_time = self.data[id]["hours"][time[0]]["open"]
-        close_time = self.data[id]["hours"][time[0]]["close"]
+        if time[0] in self.data[id]["hours"]:
+            open_time = self.data[id]["hours"][time[0]]["open"]
+            close_time = self.data[id]["hours"][time[0]]["close"]
+        else:
+            print id, self.data[id]["name"], "does not have", time[0]
+            return False
 
         open_time = self.hour_to_number(open_time)
         close_time = self.hour_to_number(close_time)
         query_time = self.hour_to_number(time[1])
 
-        if query_time >= open_time and query_time <= close_time:
+        if (open_time > close_time and (query_time >= open_time or query_time <= close_time))\
+                or (open_time < close_time and (query_time >= open_time and query_time <= close_time)) or (open_time == close_time):
             return True
         else:
+            print id, self.data[id]["name"], "open:", open_time, "close:", close_time, "query:", query_time, "filtered by hours"
             return False
 
     def hour_to_number(self, hours):
