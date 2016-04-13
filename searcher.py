@@ -27,12 +27,15 @@ class Searcher(object):
         print "Processing query:", query
         search_results = self.searching(query)
         results = self.filtering(search_results, filters)
-        return results
+        MAX = 10
+        if len(results) < MAX:
+            MAX = len(results)
+        return results[:MAX]
 
     def searching(self, query):
         print "Searching:", query
         query = QueryParser(Version.LUCENE_4_10_1, "text", self.analyzer).parse(query)
-        MAX = 50
+        MAX = 500
         hits = self.searcher.search(query, MAX)
         results = []
         for hit in hits.scoreDocs:
@@ -49,7 +52,7 @@ class Searcher(object):
         results = []
         for item in search_results:
             id = item[0]
-            if not self.data[id]["open"]:
+            if "open" in self.data[id] and not self.data[id]["open"]:
                 continue
 
             valid = True
