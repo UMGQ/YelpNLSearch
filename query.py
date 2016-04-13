@@ -100,6 +100,12 @@ def parse_location(original_setence) :
 	if 'montreal' in original_setence :
 		filters['city'] = 'Montreal'
 		original_setence = original_setence.replace('montreal', "")
+	if 'edinburgh' in original_setence :
+		filters['city'] = 'Edinburgh'
+		original_setence = original_setence.replace('edinburgh', "")
+	if 'urbana-champaign' in original_setence :
+		filters['city'] = 'Urbana-Champaign'
+		original_setence = original_setence.replace('urbana-champaign', "")
 					
 
 	itemlist = original_setence.lower().split(' ')
@@ -261,4 +267,4 @@ def query(original) :
 	#print filters
 	return original_setence, filters
 
-#query("Find Bar in montreal in six miles on tomorrow")
+#query("Find Bar in Urbana-Champaign in six miles on tomorrow")
