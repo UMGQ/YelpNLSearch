@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+     <head>
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="description" content="">
+            <meta name="author" content="">
+            <link rel="shortcut icon" href="assets/img/favicon.png">
+
+            <title>Search Food</title>
+
+            <!-- Bootstrap core CSS -->
+            <link href="static/css/bootstrap.css" rel="stylesheet">
+
+            <!-- Custom styles for this template -->
+            <link href="static/css/main.css" rel="stylesheet">
+
+            <!-- Fonts from Google Fonts -->
+            <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+            
+            <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+            <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+              <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+            <![endif]-->
+
+            <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+            <script>
+                 $(document).ready(function(){
+                      $( "#submit1" ).click(function() {
+                          $('#tail').empty();
+                          var search_text = $('#text1').serialize();
+                          //alert(search_text);
+                          $.ajax({
+                            type: 'POST',
+                            url: '/process',
+                            data: search_text,
+                            success: function(data){
+                              
+                              data_s = String(data);
+                              //alert(data_s);
+                              var len = data_s.length;
+                              //data_s_n = data_s.substring(1,len-1);
+                              //alert(data_s_n);
+                              var res = data_s.split("#")
+                              var i;
+                              for (i=0; i < res.length; i++) {
+                                  //alert(res[i]);
+                                  
+                                  var myObject = JSON.parse(res[i]);
+                                  //alert(myObject['name'])
+                                  var items = [];
+
+                                  //alert(myObject);
+                                 
+                                  $.each(myObject, function( key, val ) {
+                                    items.push( "<li class=\"list-group-item\" id='" + key + "'>" + "<b>" + key + ": " + "</b>" + val + "</li>" );
+                                  });
+                                  items.sort();
+                                  var items2 = [];
+                                  items2.push(items[2]);
+                                  items2.push(items[0]);
+                                  items2.push(items[1]);
+                                  items2.push(items[4]);
+                                  items2.push(items[3]);
+
+                                  $( "<div/>", {
+                                    "id": i,
+                                    "style": "border: 5px solid white",
+                                    "class": "list-group",
+                                    html: items2.join( "" )
+                                  }).appendTo( "#tail" );
+                               }
+                              
+                            }
+                          });
+                      });
+
+                 });
+            </script>                     
+     </head>
+
+     <body>   
+        <div class="navbar navbar-default navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#"><b>Search Food</b></a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Do you want to find food?</a></li>
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
+        </div>
+
+
+　　     <iframe name="res" style="display:none;" src="a.htm" frameborder=“0” scrolling="yes" height="100px" width="100px"></iframe>
+
+
+        <div id="headerwrap">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1>Find the best restaurant</h1>
+                <form class="form-inline" role="form" target="res"> 
+                  <div class="form-group">
+                    <input type="text" id="text1" name="stext" class="form-control"  placeholder="Enter what you want to find">
+                  </div>
+                  <button id="submit1" type="submit" class="btn btn-warning btn-lg">Search!</button>
+                </form>         
+              </div><!-- /col-lg-6 -->
+              <div class="col-sm-6" style="margin-top: 20px">
+                <img class="img-responsive" src="static/img/ipad-hand.png" alt="" >
+              </div><!-- /col-lg-6 -->
+              
+            </div><!-- /row -->
+          </div><!-- /container -->
+        </div><!-- /headerwrap -->
+        
+        <div id="tail">
+        </div>
+
+
+     </body>
+</html>
+
+
+
+
