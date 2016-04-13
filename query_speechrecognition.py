@@ -115,37 +115,52 @@ def parse_location(original_setence) :
 
 def parse_time(original_setence) :
 	#times = time.localtime()
-	weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-	wday = weekdays[times[6]]
-	time = str(times[3]) + ':' + str(times[4])
-
 	lower = original_setence.lower()
 	filters = {}
+
+	weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+	wday = weekdays[times[6]]
+	time = ''
+	if 'now' in lower :
+		time = str(times[3]) + ':' + str(times[4])
+		original_setence = original_setence.replace(' open now', '')
+		original_setence = original_setence.replace(' now', '')
+	else :
+		time = 'no'
+
 
 	if 'tomorrow' in lower : 
 		wday = weekdays[ (times[6]+1) % 7]
 		original_setence = original_setence.replace(' tomorrow', '')
+		time = '12:00'
 	if 'monday' in lower :
 		wday = 'Monday'
 		original_setence = original_setence.replace(' monday', '')
+		time = '12:00'
 	if 'tuesday' in lower :
 		wday = 'Tuesday'
 		original_setence = original_setence.replace(' tuesday', '')
+		time = '12:00'
 	if 'wednesday' in lower :
 		wday = 'Wednesday'
 		original_setence = original_setence.replace(' wednesday', '')
+		time = '12:00'
 	if 'thursday' in lower :
 		wday = 'Thursday'
 		original_setence = original_setence.replace(' thursday', '')
+		time = '12:00'
 	if 'friday' in lower :
 		wday = 'Friday'
 		original_setence = original_setence.replace(' friday', '')
+		time = '12:00'
 	if 'saturday' in lower :
 		wday = 'Saturday'
 		original_setence = original_setence.replace(' saturday', '')
+		time = '12:00'
 	if 'sunday' in lower :
 		wday = 'Sunday'
 		original_setence = original_setence.replace(' sunday', '')
+		time = '12:00'
 
 	words = lower.split(' ')
 	for idx, word in enumerate(words[:-1]) :
@@ -175,7 +190,8 @@ def parse_time(original_setence) :
 					else :
 						time = str(t+1) + ':00'
 					break
-	filters['hours'] = [wday, time]
+	if time != 'no' :
+		filters['hours'] = [wday, time]
 	return original_setence, filters
 
 
