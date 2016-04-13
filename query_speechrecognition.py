@@ -100,6 +100,12 @@ def parse_location(original_setence) :
 	if 'montreal' in original_setence :
 		filters['city'] = 'Montreal'
 		original_setence = original_setence.replace('montreal', "")
+	if 'edinburgh' in original_setence :
+		filters['city'] = 'Edinburgh'
+		original_setence = original_setence.replace('edinburgh', "")
+	if 'urbana-champaign' in original_setence :
+		filters['city'] = 'Urbana-Champaign'
+		original_setence = original_setence.replace('urbana-champaign', "")
 					
 
 	itemlist = original_setence.lower().split(' ')
