@@ -18,6 +18,7 @@ def all_cities():
 		States[gc.get_us_states()[state]['name'].lower()] = state
 	for city in gc.get_cities() :
 		Cities[gc.get_cities()[city]['name'].lower()] = gc.get_cities()[city]['name']
+	Cities['new york'] = "New York"
 
 def get_audio_query():
 	# obtain audio from the microphone
@@ -50,11 +51,12 @@ def extract_entity_names(t):
 	return entity_names
 
 def parse_location(original_setence) :
-	original_setence = ' '.join(i.capitalize() for i in original_setence.split(' '))
+	temp = original_setence
+	orig_setence = ' '.join(i.capitalize() for i in temp.split(' '))
 	#print original_setence
 	filters = {}
 
-	sentences = nltk.sent_tokenize(original_setence)
+	sentences = nltk.sent_tokenize(orig_setence)
 	tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
 	tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
 	chunked_sentences = nltk.ne_chunk_sents(tagged_sentences, binary=False)
@@ -62,6 +64,7 @@ def parse_location(original_setence) :
 
 	entity_names = []
 	for tree in chunked_sentences:
+		#print tree
 		entity_names.extend(extract_entity_names(tree))
 
 	name_dict = {}
@@ -71,11 +74,12 @@ def parse_location(original_setence) :
 		name_dict[n_list[0]] = name
 
 	chunking_list = list(tree.flatten())
-
+	#print chunking_list
 	if len(chunking_list) > 1:
 		for index in range(1, len(chunking_list)):
 			if chunking_list[index][0] in name_dict and chunking_list[index-1][1] == 'IN':
 				items = name_dict[chunking_list[index][0]].lower()
+				itemsrcd = items
 				itemlist = items.split(' ')
 				if itemlist[-1] in States :
 					filters['state'] = States[itemlist[-1]]
@@ -85,6 +89,10 @@ def parse_location(original_setence) :
 					items = ' '.join(itemlist[:-1])
 				if items in Cities :
 					filters['city'] = Cities[items]
+					#print original_setence.replace(itemsrcd, "")
+					original_setence = original_setence.replace(itemsrcd, "")
+					#print original_setence
+					
 
 	itemlist = original_setence.lower().split(' ')
 	for idx, item in  enumerate(itemlist) :
@@ -94,8 +102,13 @@ def parse_location(original_setence) :
 			for i, num in enumerate(nums) :
 				if num  == itemlist[idx-1] :
 					filters['distance'] = [i+1, (laititude, longitude)]
-	#print(location)
-	return filters
+					if (idx + 1) < len(itemlist) :
+						original_setence = ' '.join(itemlist[:idx-1] + itemlist[idx+1:])
+					else :
+						original_setence = ' '.join(itemlist[:idx-1])
+	#print original_setence
+	#print filters
+	return original_setence, filters
 
 
 
@@ -110,20 +123,28 @@ def parse_time(original_setence) :
 
 	if 'tomorrow' in lower : 
 		wday = weekdays[ (times[6]+1) % 7]
+		original_setence = original_setence.replace(' tomorrow', '')
 	if 'monday' in lower :
 		wday = 'Monday'
+		original_setence = original_setence.replace(' monday', '')
 	if 'tuesday' in lower :
 		wday = 'Tuesday'
+		original_setence = original_setence.replace(' tuesday', '')
 	if 'wednesday' in lower :
 		wday = 'Wednesday'
+		original_setence = original_setence.replace(' wednesday', '')
 	if 'thursday' in lower :
 		wday = 'Thursday'
+		original_setence = original_setence.replace(' thursday', '')
 	if 'friday' in lower :
 		wday = 'Friday'
+		original_setence = original_setence.replace(' friday', '')
 	if 'saturday' in lower :
 		wday = 'Saturday'
+		original_setence = original_setence.replace(' saturday', '')
 	if 'sunday' in lower :
 		wday = 'Sunday'
+		original_setence = original_setence.replace(' sunday', '')
 
 	words = lower.split(' ')
 	for idx, word in enumerate(words[:-1]) :
@@ -154,7 +175,7 @@ def parse_time(original_setence) :
 						time = str(t+1) + ':00'
 					break
 	filters['hours'] = [wday, time]
-	return filters
+	return original_setence, filters
 
 
 
@@ -166,6 +187,8 @@ def parse_filters(original_setence) :
 		filters['Happy Hour'] = True;
 	if 'credit' in lower :
 		filters['Accepts Credit Card'] = True
+		original_setence = original_setence.replace(' credit card', '')
+		original_setence = original_setence.replace(' credit', '')
 	if 'group' in lower :
 		filters['Good For Groups'] = True
 	if 'kid' in lower or 'child' in lower:
@@ -176,32 +199,42 @@ def parse_filters(original_setence) :
 		filters['Price Range'] = 1
 	elif 'cheap' in lower :
 		filters['Price Range'] = 2
-	elif 'medium' in lower :
+	elif 'not expensive' in lower :
 		filters['Price Range'] = 3
 	elif 'expensive' in lower :
 		filters['Price Range'] = 4
 	if 'take out' in lower :
 		filters['Take-out'] = True
+		original_setence = original_setence.replace(' take out', '')
 	if 'drive through' in lower :
 		filters['Drive-Thru'] = True
+		original_setence = original_setence.replace(' drive through', '')
 	if 'reserv' in lower :
 		filters['Takes Reservations'] = True
 	if 'deliver' in lower :
 		filters['Delivery'] = True
+		original_setence = original_setence.replace(' delivery', '')
 	################ Attention! different attribute for parking ########################
 	if 'parking' in lower : 
 		filters['Parking'] = True
 
-	return filters
+	return original_setence, filters
 
 
-def query(original_setence) :
+def query(original) :
+	original_setence = original.lower()
+	#print original
 	all_cities()
 	filters = {}
-	filters.update(parse_location(original_setence))
-	filters.update(parse_time(original_setence))
-	filters.update(parse_filters(original_setence))
+	#print Cities
+	original_setence, newfilters = parse_location(original_setence)
+	filters.update(newfilters)
+	original_setence, newfilters = parse_time(original_setence)
+	filters.update(newfilters)
+	original_setence, newfilters = parse_filters(original_setence)
+	filters.update(newfilters)
 	#print original_setence
 	#print filters
 	return original_setence, filters
 
+query("Find Bar in new york in six miles")
