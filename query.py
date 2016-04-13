@@ -1,8 +1,23 @@
 import nltk
 import speech_recognition as sr
 import time
+import geonamescache
 
 times = time.localtime()
+nums = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nigh', 'ten', 'eleven', 'twelve', 'thirtenn', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'ninteen', 'twenty']
+Cities = {}
+States = {}
+States_abbr = {}
+laititude = 42.2909756
+longitude = -83.716124
+
+def all_cities():
+	gc = geonamescache.GeonamesCache()
+	for state in gc.get_us_states() :
+		States_abbr[state.lower()] = state
+		States[gc.get_us_states()[state]['name'].lower()] = state
+	for city in gc.get_cities() :
+		Cities[gc.get_cities()[city]['name'].lower()] = gc.get_cities()[city]['name']
 
 def get_audio_query():
 	# obtain audio from the microphone
@@ -26,7 +41,7 @@ def extract_entity_names(t):
 	entity_names = []
 
 	if hasattr(t, 'label') and t.label():
-		if t.label() in ['PERSON' , 'GPE' , 'ORGANIZATION']: 
+		if t.label() in ['PERSON' , 'GPE' , 'ORGANIZATION', 'FACILITY']: 
 			entity_names.append(' '.join([child[0] for child in t]))
 		else:
 			for child in t:
@@ -35,6 +50,10 @@ def extract_entity_names(t):
 	return entity_names
 
 def parse_location(original_setence) :
+	original_setence = ' '.join(i.capitalize() for i in original_setence.split(' '))
+	#print original_setence
+	filters = {}
+
 	sentences = nltk.sent_tokenize(original_setence)
 	tokenized_sentences = [nltk.word_tokenize(sentence) for sentence in sentences]
 	tagged_sentences = [nltk.pos_tag(sentence) for sentence in tokenized_sentences]
@@ -43,7 +62,6 @@ def parse_location(original_setence) :
 
 	entity_names = []
 	for tree in chunked_sentences:
-		#print(tree)
 		entity_names.extend(extract_entity_names(tree))
 
 	name_dict = {}
@@ -51,29 +69,39 @@ def parse_location(original_setence) :
 	for name in entity_names:
 		n_list = name.split()
 		name_dict[n_list[0]] = name
-	print name_dict
 
 	chunking_list = list(tree.flatten())
-
-	#print(name_dict)
-	#print(chunking_list)
-	location = 'N/A'
 
 	if len(chunking_list) > 1:
 		for index in range(1, len(chunking_list)):
 			if chunking_list[index][0] in name_dict and chunking_list[index-1][1] == 'IN':
-				if chunking_list[index-1][0].lower() in ['in', 'on', 'at', 'near'] :
-					location = name_dict[chunking_list[index][0]]
+				items = name_dict[chunking_list[index][0]].lower()
+				itemlist = items.split(' ')
+				if itemlist[-1] in States :
+					filters['state'] = States[itemlist[-1]]
+					items = ' '.join(itemlist[:-1])
+				if itemlist[-1] in States_abbr :
+					filters['state'] = States_abbr[itemlist[-1]]
+					items = ' '.join(itemlist[:-1])
+				if items in Cities :
+					filters['city'] = Cities[items]
 
+	itemlist = original_setence.lower().split(' ')
+	for idx, item in  enumerate(itemlist) :
+		if idx == 0 :
+			continue
+		if 'mile' in item :
+			for i, num in enumerate(nums) :
+				if num  == itemlist[idx-1] :
+					filters['distance'] = [i+1, (laititude, longitude)]
 	#print(location)
-	return location
+	return filters
 
 
 
 def parse_time(original_setence) :
 	#times = time.localtime()
 	weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-	nums = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nigh', 'ten', 'eleven', 'twelve']
 	wday = weekdays[times[6]]
 	time = str(times[3]) + ':' + str(times[4])
 
@@ -137,7 +165,7 @@ def parse_filters(original_setence) :
 	if 'happy hour' in lower :
 		filters['Happy Hour'] = True;
 	if 'credit' in lower :
-		filters['Accepts Credit Credit'] = True
+		filters['Accepts Credit Card'] = True
 	if 'group' in lower :
 		filters['Good For Groups'] = True
 	if 'kid' in lower or 'child' in lower:
@@ -163,22 +191,17 @@ def parse_filters(original_setence) :
 	################ Attention! different attribute for parking ########################
 	if 'parking' in lower : 
 		filters['Parking'] = True
+
 	return filters
 
 
-def main() :
-	with open('a.txt', 'r') as f:
-		original_setence = f.read()
-		location = parse_location(original_setence)
-		print "@@@@@@@@@@@@@@"
-		print location
-		filters = {}
-		filters.update(parse_time(original_setence))
-		filters.update(parse_filters(original_setence))
-		print original_setence
-		print filters
-		return original_setence, filters
+def query(original_setence) :
+	all_cities()
+	filters = {}
+	filters.update(parse_location(original_setence))
+	filters.update(parse_time(original_setence))
+	filters.update(parse_filters(original_setence))
+	#print original_setence
+	#print filters
+	return original_setence, filters
 
-
-if __name__ == "__main__" :
-	main()
