@@ -222,7 +222,8 @@ def parse_filters(original_setence) :
 	return original_setence, filters
 
 
-def query(original) :
+def query() :
+	original = get_audio_query()
 	original_setence = original.lower()
 	#print original
 	all_cities()
@@ -238,4 +239,4 @@ def query(original) :
 	#print filters
 	return original_setence, filters
 
-#query("Find Bar in new york in six miles")
+query()
