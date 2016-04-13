@@ -60,12 +60,12 @@ class Searcher(object):
                 if key == "Price Range":
                     if self.data[id]["attributes"][key] != value:
                         valid = False
-                        print id, self.data[id]["name"], "filtered by price range, request:", value, "actual:", self.data[id]["attributes"][key]
+                        #print id, self.data[id]["name"], "filtered by price range, request:", value, "actual:", self.data[id]["attributes"][key]
                         break
                 elif key == "Parking":
                     valid = self.check_parking(id)
                     if not valid:
-                        print id, self.data[id]["name"], "filtered by parking"
+                        #print id, self.data[id]["name"], "filtered by parking"
                         break
                 elif key == "hours":
                     valid = self.check_hours(id, value)
@@ -74,17 +74,17 @@ class Searcher(object):
                 elif key == "city" or key == "state":
                     if self.data[id][key] != value:
                         valid = False
-                        print id, self.data[id]["name"], "filtered by city/state"
+                        #print id, self.data[id]["name"], "filtered by city/state"
                         break
                 elif key == "distance":
                     valid = self.check_distance(id, value)
                     if not valid:
-                        print id, self.data[id]["name"], "filtered by distance"
+                        #print id, self.data[id]["name"], "filtered by distance"
                         break
                 else:
                     if key not in self.data[id]["attributes"] or not self.data[id]["attributes"][key]:
                         valid = False
-                        print id, self.data[id]["name"], "filtered by others"
+                        #print id, self.data[id]["name"], "filtered by others"
                         break
 
             if valid:
@@ -117,7 +117,7 @@ class Searcher(object):
             open_time = self.data[id]["hours"][time[0]]["open"]
             close_time = self.data[id]["hours"][time[0]]["close"]
         else:
-            print id, self.data[id]["name"], "does not have", time[0]
+            #print id, self.data[id]["name"], "does not have", time[0]
             return False
 
         open_time = self.hour_to_number(open_time)
@@ -128,7 +128,7 @@ class Searcher(object):
                 or (open_time < close_time and (query_time >= open_time and query_time <= close_time)) or (open_time == close_time):
             return True
         else:
-            print id, self.data[id]["name"], "open:", open_time, "close:", close_time, "query:", query_time, "filtered by hours"
+            #print id, self.data[id]["name"], "open:", open_time, "close:", close_time, "query:", query_time, "filtered by hours"
             return False
 
     def hour_to_number(self, hours):
