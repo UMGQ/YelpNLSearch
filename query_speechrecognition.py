@@ -27,8 +27,8 @@ def get_audio_query():
 	    print("Say something!")
 	    audio = r.listen(source)
 
-	# recognize speech using Sphinx
-	recognized_sentense = r.recognize_sphinx(audio)
+	# recognize speech using google
+	recognized_sentense = r.recognize_google(audio)
 	return recognized_sentense
 	'''
 	try:
@@ -268,4 +268,4 @@ def query() :
 	#print filters
 	return original_setence, filters
 
-#query()
+query()
