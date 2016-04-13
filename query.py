@@ -106,6 +106,10 @@ def parse_location(original_setence) :
 	if 'urbana-champaign' in original_setence :
 		filters['city'] = 'Urbana-Champaign'
 		original_setence = original_setence.replace('urbana-champaign', "")
+
+	if 'near' in original_setence :
+		filters['distance'] = [5, (laititude, longitude)]
+		original_setence = original_setence.replace(' near', "")
 					
 
 	itemlist = original_setence.lower().split(' ')
@@ -113,13 +117,21 @@ def parse_location(original_setence) :
 		if idx == 0 :
 			continue
 		if 'mile' in item :
-			for i, num in enumerate(nums) :
-				if num  == itemlist[idx-1] :
-					filters['distance'] = [i+1, (laititude, longitude)]
-					if (idx + 1) < len(itemlist) :
-						original_setence = ' '.join(itemlist[:idx-1] + itemlist[idx+1:])
-					else :
-						original_setence = ' '.join(itemlist[:idx-1])
+			try :
+				dist = float(itemlist[idx-1])
+				filters['distance'] = [dist, (laititude, longitude)]
+				if (idx + 1) < len(itemlist) :
+					original_setence = ' '.join(itemlist[:idx-1] + itemlist[idx+1:])
+				else :
+					original_setence = ' '.join(itemlist[:idx-1])
+			except :
+				for i, num in enumerate(nums) :
+					if num  == itemlist[idx-1] :
+						filters['distance'] = [i+1, (laititude, longitude)]
+						if (idx + 1) < len(itemlist) :
+							original_setence = ' '.join(itemlist[:idx-1] + itemlist[idx+1:])
+						else :
+							original_setence = ' '.join(itemlist[:idx-1])
 	#print original_setence
 	#print filters
 	return original_setence, filters
@@ -264,7 +276,7 @@ def query(original) :
 	original_setence, newfilters = parse_filters(original_setence)
 	filters.update(newfilters)
 	#print original_setence
-	#print filters
+	print filters
 	return original_setence, filters
 
-#query("Find Bar in Urbana-Champaign in six miles on tomorrow")
+query("Find near Bar in Urbana-Champaign  on tomorrow")
