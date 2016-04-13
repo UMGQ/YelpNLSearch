@@ -31,14 +31,17 @@ def get_audio_query():
     	# for testing purposes, we're just using the default API key
     	# to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
     	# instead of `r.recognize_google(audio)`
-    	temp = r.recognize_google(audio)
-    	print("Google Speech Recognition thinks you said " + temp)
+    	    temp = r.recognize_google(audio)
+    	    print(temp)
+            return temp
 	except sr.UnknownValueError:
-    	print("Google Speech Recognition could not understand audio")
+    	    print("Google Speech Recognition could not understand audio")
+            return ""
 	except sr.RequestError as e:
-    	print("Could not request results from Google Speech Recognition service; {0}".format(e))
+    	    print("Could not request results from Google Speech Recognition service; {0}".format(e))
+            return ""
 	#return recognized_sentense
-	return temp
+	#return temp
 	'''
 	try:
 	    return r.recognize_sphinx(audio)
@@ -260,8 +263,11 @@ def parse_filters(original_setence) :
 	return original_setence, filters
 
 
-def query() :
+def query_speech() :
 	original = get_audio_query()
+        if not original:
+            return "", {}
+
 	original_setence = original.lower()
 	#print original
 	all_cities()
@@ -277,4 +283,4 @@ def query() :
 	#print filters
 	return original_setence, filters
 
-query()
+#query_speech()
