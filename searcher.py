@@ -58,7 +58,7 @@ class Searcher(object):
             valid = True
             for key, value in filters.items():
                 if key == "Price Range":
-                    if self.data[id]["attributes"][key] != value:
+                    if key in self.data[id]["attributes"] and self.data[id]["attributes"][key] != value:
                         valid = False
                         #print id, self.data[id]["name"], "filtered by price range, request:", value, "actual:", self.data[id]["attributes"][key]
                         break
@@ -105,6 +105,8 @@ class Searcher(object):
 
     def check_parking(self, id):
         parking = False
+        if "Parking" not in self.data[id]["attributes"]:
+            return False
         for value in self.data[id]["attributes"]["Parking"].values():
             if value:
                 parking = True
@@ -118,7 +120,7 @@ class Searcher(object):
             close_time = self.data[id]["hours"][time[0]]["close"]
         else:
             #print id, self.data[id]["name"], "does not have", time[0]
-            return False
+            return True
 
         open_time = self.hour_to_number(open_time)
         close_time = self.hour_to_number(close_time)
