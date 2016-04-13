@@ -250,8 +250,8 @@ def query(original) :
 	filters.update(newfilters)
 	original_setence, newfilters = parse_filters(original_setence)
 	filters.update(newfilters)
-	print original_setence
-	print filters
+	#print original_setence
+	#print filters
 	return original_setence, filters
 
-query("Find Bar in new york in six miles on tomorrow")
+#query("Find Bar in new york in six miles on tomorrow")
