@@ -14,7 +14,6 @@ searcher = None
 @app.route('/')
 def main():
     f = open('index.html', 'r')
-    searcher = Searcher("../data.json")
 
     return "\"\"\"" + f.read() 
 
@@ -48,4 +47,6 @@ def process(q):
     return ret[:-1]
 
 if __name__ == '__main__':
+    searcher = Searcher("data.json")
+    print "Finished loading data.json"
     app.run()

@@ -6,8 +6,10 @@ def main():
     searcher = Searcher("data.json")
     while True:
         print
+        response = "n"
         print "=================================="
-        #q = raw_input("Please enter your search:")
+        while response != "y":
+            response = raw_input("Ready to say something? (y/n)")
         q, filters = query_speech()
         if not q:
             continue

@@ -8,8 +8,8 @@ nums = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nigh', 
 Cities = {}
 States = {}
 States_abbr = {}
-laititude = 42.2909756
-longitude = -83.716124
+laititude = 36.169941
+longitude = -115.139830
 
 def all_cities():
 	gc = geonamescache.GeonamesCache()
@@ -24,7 +24,7 @@ def get_audio_query():
 	# obtain audio from the microphone
 	r = sr.Recognizer()
 	with sr.Microphone() as source:
-	    print("Say something!")
+	    print("Say something...")
 	    audio = r.listen(source)
 
 	try:
@@ -35,7 +35,7 @@ def get_audio_query():
     	    print(temp)
             return temp
 	except sr.UnknownValueError:
-    	    print("Google Speech Recognition could not understand audio")
+    	    print("I could not understand audio")
             return ""
 	except sr.RequestError as e:
     	    print("Could not request results from Google Speech Recognition service; {0}".format(e))

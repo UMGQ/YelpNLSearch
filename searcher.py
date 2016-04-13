@@ -30,10 +30,20 @@ class Searcher(object):
         MAX = 10
         if len(results) < MAX:
             MAX = len(results)
-        return results[:MAX]
+        ret = []
+        for i in range(MAX):
+            id = results[i][0]
+            tmp = {}
+            tmp["name"] = self.data[id]["name"]
+            tmp["address"] = self.data[id]["full_address"]
+            tmp["category"] = self.data[id]["categories"]
+            tmp["review count"] = self.data[id]["review_count"]
+            tmp["stars"] = self.data[id]["stars"]
+            ret.append(tmp)
+        return ret
 
     def searching(self, query):
-        print "Searching:", query
+        print "Searching:"
         query = QueryParser(Version.LUCENE_4_10_1, "text", self.analyzer).parse(query)
         MAX = 500
         hits = self.searcher.search(query, MAX)

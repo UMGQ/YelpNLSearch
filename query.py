@@ -8,8 +8,8 @@ nums = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nigh', 
 Cities = {}
 States = {}
 States_abbr = {}
-laititude = 42.2909756
-longitude = -83.716124
+laititude = 36.169941
+longitude = -115.139830
 
 def all_cities():
 	gc = geonamescache.GeonamesCache()

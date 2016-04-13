@@ -37,9 +37,11 @@
                             type: 'POST',
                             url: '/process',
                             data: search_text,
-                            success: function(data){
-                              
+                            success: function(data){ 
                               data_s = String(data);
+                              if (data_s.length == 0) {
+                                  alert("No result found");
+                              }
                               //alert(data_s);
                               var len = data_s.length;
                               //data_s_n = data_s.substring(1,len-1);
@@ -69,7 +71,7 @@
                                   $( "<div/>", {
                                     "id": i,
                                     "style": "border: 5px solid white",
-                                    "class": "list-group",
+                                    "class": "list-group col-sm-6",
                                     html: items2.join( "" )
                                   }).appendTo( "#tail" );
                                }
