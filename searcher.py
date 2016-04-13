@@ -107,8 +107,10 @@ class Searcher(object):
     def check_distance(self, id, value):
         p1 = (self.data[id]["latitude"], self.data[id]["longitude"])
         p2 = value[1]
+
+        print p1, p2
         
-        if value[0] <= distance(p1, p2):
+        if distance(p1, p2) <= value[0]:
             return True
         else:
             return False
