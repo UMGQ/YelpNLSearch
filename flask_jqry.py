@@ -11,13 +11,14 @@ app = Flask(__name__)
 
 searcher = None
 
+#This function is ued for display the webpage on the browser
 @app.route('/')
 def main():
     f = open('index.html', 'r')
 
     return "\"\"\"" + f.read() 
 
-
+#This function for handling the POST request sent from web page and call another python script to run for getting data
 @app.route('/process', methods=['POST'])
 def view_do_something():
 
@@ -32,6 +33,7 @@ def view_do_something():
     else:
         return "NO OK"
 
+#Generating parsed queries and doing search
 def process(q):
     if not q:
         return

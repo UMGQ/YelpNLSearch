@@ -108,7 +108,7 @@ class Searcher(object):
         p1 = (self.data[id]["latitude"], self.data[id]["longitude"])
         p2 = value[1]
         
-        if value[0] <= distance(p1, p2):
+        if distance(p1, p2) <= value[0]:
             return True
         else:
             return False
