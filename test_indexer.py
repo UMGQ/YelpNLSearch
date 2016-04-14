@@ -1,7 +1,3 @@
-import sys
-import os
-from indexer import Indexer
-
 """
 This script is used to index the yelp dataset.
 Please use the following command to start this script:
@@ -9,6 +5,10 @@ Please use the following command to start this script:
 The inverted index will be saved to ./index/ folder, refer to indexer.py for more information.
 The preprocessed data will be saved to file ./data.json.
 """
+import sys
+import os
+from indexer import Indexer
+
 def main():
     print "Usage: python test_indexer.py <source path> [destination]"
     source = sys.argv[1]

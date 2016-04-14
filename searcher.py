@@ -1,3 +1,10 @@
+
+"""
+This class is used to perform query searches.
+When a Searcher object is created, it loads the preprocessed data from disk to memory.
+A query can be performed by calling function perform_query. The function will return list of search
+results ranked by ranking score.
+"""
 import sys
 import os
 import collections
@@ -13,12 +20,6 @@ from org.apache.lucene.util import Version
 from org.apache.lucene.search import IndexSearcher
 from org.apache.lucene.queryparser.classic import QueryParser
 
-"""
-This class is used to perform query searches.
-When a Searcher object is created, it loads the preprocessed data from disk to memory.
-A query can be performed by calling function perform_query. The function will return list of search
-results ranked by ranking score.
-"""
 class Searcher(object):
     def __init__(self, path):
         print "Loading data.json..."
@@ -126,7 +127,9 @@ class Searcher(object):
         return results
 
     def check_distance(self, id, value):
-        # check if a business resides in the requested distance radius
+        """
+            check if a business resides in the requested distance radius
+        """
         p1 = (self.data[id]["latitude"], self.data[id]["longitude"])
         p2 = value[1]
         
@@ -136,7 +139,9 @@ class Searcher(object):
             return False
 
     def check_parking(self, id):
-        # function to check if a business has parking
+        """
+            function to check if a business has parking
+        """
         parking = False
         if "Parking" not in self.data[id]["attributes"]:
             return False
@@ -148,7 +153,9 @@ class Searcher(object):
         return parking
 
     def check_hours(self, id, time):
-        # function to check if a business opens at a given time
+        """
+            function to check if a business opens at a given time
+        """
         if time[0] in self.data[id]["hours"]:
             open_time = self.data[id]["hours"][time[0]]["open"]
             close_time = self.data[id]["hours"][time[0]]["close"]

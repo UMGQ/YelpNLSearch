@@ -1,10 +1,18 @@
+"""
+    calculate the distance between two lat lng points in miles
+    point: (lat, lng)
+
+    p1 = (42.280826, -83.743038) # ann arbor
+    p2 = (41.878114, -87.629798) # chicago
+    print distance(p1, p2)
+"""
 import math
 
-# calculate the distance between two lat lng points in miles
-# point: (lat, lng)
 
 def toRad(degree):
-    # convert degree to radian
+    """
+        convert degree to radian
+    """
     return degree*math.pi/180
 
 def distance(p1, p2):
@@ -20,8 +28,4 @@ def distance(p1, p2):
 
     return d
 
-"""
-p1 = (42.280826, -83.743038) # ann arbor
-p2 = (41.878114, -87.629798) # chicago
-print distance(p1, p2)
-"""
+
