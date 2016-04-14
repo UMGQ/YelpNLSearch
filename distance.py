@@ -4,10 +4,11 @@ import math
 # point: (lat, lng)
 
 def toRad(degree):
+    # convert degree to radian
     return degree*math.pi/180
 
 def distance(p1, p2):
-    R = 3963
+    R = 3963    # radius
     dLat = toRad(p2[0] - p1[0])
     dLng = toRad(p2[1] - p1[1])
     lat1 = toRad(p1[0])

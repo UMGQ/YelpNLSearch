@@ -13,6 +13,12 @@ from org.apache.lucene.util import Version
 from org.apache.lucene.search import IndexSearcher
 from org.apache.lucene.queryparser.classic import QueryParser
 
+"""
+This class is used to perform query searches.
+When a Searcher object is created, it loads the preprocessed data from disk to memory.
+A query can be performed by calling function perform_query. The function will return list of search
+results ranked by ranking score.
+"""
 class Searcher(object):
     def __init__(self, path):
         print "Loading data.json..."
@@ -24,13 +30,21 @@ class Searcher(object):
         self.searcher = IndexSearcher(self.reader)
 
     def process_query(self, query, filters):
+        """
+        Function to process a query.
+        There are two steps: the first step uses the query to find relevant results ranked;
+        the second step use the filter to eliminate items that do not match the filter.
+        """
         print "Processing query:", query
         search_results = self.searching(query)
         results = self.filtering(search_results, filters)
+        # if more than 10 results match the search query and pass the filtering
+        # only 10 will be returned to web server and displayed in webpage
         MAX = 10
         if len(results) < MAX:
             MAX = len(results)
         ret = []
+        # the following fields will be displayed in the webpage
         for i in range(MAX):
             id = results[i][0]
             tmp = {}
@@ -43,6 +57,9 @@ class Searcher(object):
         return ret
 
     def searching(self, query):
+        """
+        Function to perform the search. Results will be returned based on relevance.
+        """
         print "Searching:"
         query = QueryParser(Version.LUCENE_4_10_1, "text", self.analyzer).parse(query)
         MAX = 500
@@ -58,10 +75,14 @@ class Searcher(object):
         return results
 
     def filtering(self, search_results, filters):
+        """
+        Function to perform filtering.
+        """
         print "Filtering..."
         results = []
         for item in search_results:
             id = item[0]
+            # get rid of those businesses that are not longer in existence
             if "open" in self.data[id] and not self.data[id]["open"]:
                 continue
 
@@ -105,6 +126,7 @@ class Searcher(object):
         return results
 
     def check_distance(self, id, value):
+        # check if a business resides in the requested distance radius
         p1 = (self.data[id]["latitude"], self.data[id]["longitude"])
         p2 = value[1]
         
@@ -114,6 +136,7 @@ class Searcher(object):
             return False
 
     def check_parking(self, id):
+        # function to check if a business has parking
         parking = False
         if "Parking" not in self.data[id]["attributes"]:
             return False
@@ -125,6 +148,7 @@ class Searcher(object):
         return parking
 
     def check_hours(self, id, time):
+        # function to check if a business opens at a given time
         if time[0] in self.data[id]["hours"]:
             open_time = self.data[id]["hours"][time[0]]["open"]
             close_time = self.data[id]["hours"][time[0]]["close"]

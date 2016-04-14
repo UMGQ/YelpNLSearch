@@ -2,6 +2,10 @@ from query_speechrecognition import query_speech
 from query import query
 from searcher import Searcher
 
+"""
+This is to test the speech recognition functionality.
+"""
+
 def main():
     searcher = Searcher("data.json")
     while True:
