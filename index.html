@@ -33,11 +33,13 @@
                           $('#tail').empty();
                           var search_text = $('#text1').serialize();
                           //alert(search_text);
+			  //Send POST request using ajax to backend server
                           $.ajax({
                             type: 'POST',
                             url: '/process',
                             data: search_text,
                             success: function(data){ 
+			     //Callback handler which receives data and displaies it on webpage
                               data_s = String(data);
                               if (data_s.length == 0) {
                                   alert("No result found");
@@ -50,7 +52,7 @@
                               var i;
                               for (i=0; i < res.length; i++) {
                                   //alert(res[i]);
-                                  
+                                  //Parsing string data to JSON 
                                   var myObject = JSON.parse(res[i]);
                                   //alert(myObject['name'])
                                   var items = [];
@@ -67,7 +69,7 @@
                                   items2.push(items[1]);
                                   items2.push(items[4]);
                                   items2.push(items[3]);
-
+				  //Append div to current webpage
                                   $( "<div/>", {
                                     "id": i,
                                     "style": "border: 5px; height: 225px",

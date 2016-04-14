@@ -1,3 +1,24 @@
+"""
+	This file is very similar to query.py. The only difference is that 
+	text input of the query sentense becomes audio input
+	This file is used to parse the query into the multi filters and modify 
+	the query sentense, so that the search engine is able to retrive a 
+	list of business from dataset which meeting all requirements of query.
+
+	The filters include location limit, open time limit, happy hour, suitable
+	for group, suitable for kids, outdoor table availability, various price
+	level, take-out and delivery availability, reservation availability, and 
+	parking availability
+
+	The words shows in the filter will be removed from query string so that
+	search engine is able to get a more fair and relevant ranking of different
+	business.
+
+	@ Input: the input would be audio
+	@ Output: the imporved query sentense and a list of filters.
+
+	@ Package used: nltk, time, geonamescache
+"""
 import nltk
 import speech_recognition as sr
 import time
@@ -11,6 +32,16 @@ States_abbr = {}
 laititude = 36.169941
 longitude = -115.139830
 
+
+""" 
+	This function will set three dictionary of python.
+	
+	The package geonamescache contians a list of cities in the World and
+	a list of states in Unite States
+	After scan the list of cities and the list of states, the name of cities
+	and the name of states of America with all lower-case will be loaded into
+	dictionary Cities and States separately.
+""" 
 def all_cities():
 	gc = geonamescache.GeonamesCache()
 	for state in gc.get_us_states() :
@@ -20,6 +51,11 @@ def all_cities():
 		Cities[gc.get_cities()[city]['name'].lower()] = gc.get_cities()[city]['name']
 	Cities['new york'] = "New York"
 
+
+"""
+	This function wiil open the microphone and record the speech. Then 
+	the speech will be translated into text by google speedch recognizition.
+"""
 def get_audio_query():
 	# obtain audio from the microphone
 	r = sr.Recognizer()
@@ -40,17 +76,12 @@ def get_audio_query():
 	except sr.RequestError as e:
     	    print("Could not request results from Google Speech Recognition service; {0}".format(e))
             return ""
-	#return recognized_sentense
-	#return temp
-	'''
-	try:
-	    return r.recognize_sphinx(audio)
-	except sr.UnknownValueError:
-		print("Sphinx could not understand audio")
-	except sr.RequestError as e:
-		print("Sphinx error; {0}".format(e))
-	'''
 
+"""
+	This function is a helper function, which will be recursively called to 
+	separate one sentense into various words group. And from the groups of 
+	word, the city name and state name can be extracted as filter
+"""
 def extract_entity_names(t):
 	entity_names = []
 
@@ -63,6 +94,13 @@ def extract_entity_names(t):
 
 	return entity_names
 
+
+"""
+	This funciton will extract location information from query sentence, 
+	including identified city name, state name, and the distance limit
+	from the current location. If the query try to find near business, the
+	default distance limit is 5 miles.
+"""
 def parse_location(original_setence) :
 	temp = original_setence
 	orig_setence = ' '.join(i.capitalize() for i in temp.split(' '))
@@ -149,7 +187,12 @@ def parse_location(original_setence) :
 	return original_setence, filters
 
 
-
+"""
+	This funciton will extract time information from query sentence, 
+	including identified weekdays and time period like morning and 
+	afternoon. The query can alse specify exact time like 5 o'clock
+	and 3 pm.
+"""
 def parse_time(original_setence) :
 	#times = time.localtime()
 	lower = original_setence.lower()
@@ -232,7 +275,15 @@ def parse_time(original_setence) :
 	return original_setence, filters
 
 
-
+"""
+	This funciton will extract specified attribute of business 
+	listed in dataset, like happy hour, suitable for group, 
+	suitable for kids, outdoor table availability, various price
+	level, take-out and delivery availability, reservation 
+	availability, and parking availability. The filters translated
+	from the query will locat the specified business meeting all
+	requirement
+"""
 def parse_filters(original_setence) :
 	lower = original_setence.lower()
 	filters = {}
@@ -275,6 +326,11 @@ def parse_filters(original_setence) :
 	return original_setence, filters
 
 
+"""
+	This is main function for parsing query. The input
+	is the query sentence and the outputs are modified
+	query string and all filters
+"""
 def query_speech() :
 	original = get_audio_query()
         if not original:
