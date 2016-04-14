@@ -16,7 +16,7 @@ The following packages needs to be installed for the system to work:
 ## Steps to run the system
 1. Index the Yelp dataset:
   
-  The preprocessed data will be saved to `data.json`. The inverted index will be saved to `./index/` folder
+  The preprocessed data will be saved to `data.json`. The inverted index will be saved to `./index/` folder.
   This step has been done and all the output files has been uploaded to rod. You can skip to step 2.
 
   `python test_indexer.py <source to yelp dataset folder> data.json`
@@ -31,7 +31,7 @@ The following packages needs to be installed for the system to work:
 ## Steps to test the voice search system
 1. Index the Yelp dataset (if this has been done before, you can skip this step):
   
-  The preprocessed data will be saved to `data.json`. The inverted index will be saved to `./index/` folder
+  The preprocessed data will be saved to `data.json`. The inverted index will be saved to `./index/` folder.
   This step has been done and all the output files has been uploaded to rod. You can skip to step 2.
 
   `python test_indexer.py <source to yelp dataset folder> data.json`
